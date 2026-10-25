@@ -1,6 +1,6 @@
 # Doodle Jump ![doodle](assets/player.png)
 
-Упрощеная версия дудл чамп на pygame-ce
+Упрощеная версия Doodle Jump на pygame-ce
 
 ## Как запустить
 

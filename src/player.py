@@ -1,6 +1,6 @@
 import pygame
 
-# from src.config import WIN_WIDTH, PLAYER_MAX_HEALTH
+from src.config import WIN_WIDTH
 from src.sprite import Sprite
 
 class Player(Sprite):
@@ -16,12 +16,11 @@ class Player(Sprite):
         if pressed_keys[pygame.K_a] or pressed_keys[pygame.K_LEFT]:
             self.image = self.orig_image.copy()
             self.rect.x -= self.speed
+            if self.rect.right <= 0:
+                self.rect.left = WIN_WIDTH
         if pressed_keys[pygame.K_d] or pressed_keys[pygame.K_RIGHT]:
             self.image = pygame.transform.flip(self.orig_image, True, False)
             self.rect.x += self.speed
-
-        if self.rect.left < 0:
-            self.rect.left = 0
-        # if self.rect.right > WIN_WIDTH:
-            # self.rect.right = WIN_WIDTH
+        if self.rect.left > WIN_WIDTH:
+            self.rect.right = 0
         

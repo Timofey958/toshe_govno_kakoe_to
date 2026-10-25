@@ -1,17 +1,18 @@
 import pygame
 
+from src.config import *
 from src.sprite import Sprite
 from src.player import Player
 
 def main():
-    window = pygame.Window("doodle jump", [400, 600])
+    window = pygame.Window("Doodle Jump", WIN_SIZE)
     surface = window.get_surface()
     clock = pygame.Clock()
     platform_image = pygame.image.load("assets/platform.png")
     platform = Sprite([200, 500], platform_image)
 
     background_image = pygame.image.load("assets/background.png")
-    background_image = pygame.transform.scale(background_image, [400, 600])
+    background_image = pygame.transform.scale(background_image, WIN_SIZE)
 
     player_image = pygame.image.load("assets/player.png")
     window.set_icon(player_image)
