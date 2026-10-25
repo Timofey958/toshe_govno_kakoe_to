@@ -1,5 +1,7 @@
+import pygame
+
 class Sprite:
-    def __init__(self, center, image):
+    def __init__(self, center: list[float], image: pygame.Surface):
         self.image = image
         self.rect = self.image.get_frect(center=center)
 
