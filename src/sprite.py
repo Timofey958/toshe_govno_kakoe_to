@@ -5,5 +5,5 @@ class Sprite:
         self.image = image
         self.rect = self.image.get_frect(center=center)
 
-    def render(self, surface):
-        surface.blit(self.image, self.rect)
+    def render(self, surface: pygame.Surface, offset_y: float):
+        surface.blit(self.image, self.rect.move([0, offset_y]))
