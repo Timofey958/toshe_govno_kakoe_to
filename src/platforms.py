@@ -21,3 +21,12 @@ class MovingPlatform(Platform):
             self.speed = abs(self.speed)
             
         self.rect.x += self.speed
+
+class TrapPlatform(Platform):
+    def on_collide(self, player: Sprite):
+        event = pygame.Event(DESTROY_PLATFORM, platform = self)
+        pygame.event.post(event)
+
+class BatootPlatform(Platform):
+    def on_collide(self, player: Sprite):
+        player.velocity_y *= 1.5

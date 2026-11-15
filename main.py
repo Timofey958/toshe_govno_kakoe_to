@@ -51,18 +51,24 @@ def main():
     running = True
     lose = False
     offset_y = 0
+    spawn_platform_y = 0
     while running:
+        pressed_keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.WINDOWCLOSE:
                 running = False
+            elif event.type == DESTROY_PLATFORM:
+                platforms.remove(event.platform)
             elif (event.type == pygame.MOUSEBUTTONDOWN
                     and event.button == 1
                     and button.rect.collidepoint(pygame.mouse.get_pos())
+                    or pressed_keys[pygame.K_RETURN]
                     and lose):
+                spawn_platform_y = 0
                 player.rect.center = [200, 450]
                 platforms = [Platform([200, 500], platform_image)]
                 for y in range(550 - SPAWN_STEP, 0, -SPAWN_STEP):
-                    platforms.append(Platform([randint(0, WIN_WIDTH), y], platform_image))
+                    platforms.append(Platform([randint(0, WIN_WIDTH), y], platform_image))  
                 offset_y = 0
                 lose = False
 
@@ -73,12 +79,17 @@ def main():
             if player.rect.top - offset_y >= WIN_HEIGHT:
                 lose = True
                 fall_sound.play()
-            if platforms[-1].rect.y - offset_y >= SPAWN_STEP:
-                platforms.pop(0)
-                y = platforms[-1].rect.y - SPAWN_STEP
+                
+            if abs(offset_y) - spawn_platform_y >= SPAWN_STEP:
+                spawn_platform_y = abs(offset_y)
+                y = offset_y
                 r = randint(1, 100)
-                if r < 10:
+                if r <= MOVING_PLATFORM_PERCENTAGE:
                     platform = MovingPlatform([randint(0, WIN_WIDTH), y], platform_image)
+                elif r <= TRAP_PLATFORM_PERCENTAGE:
+                    platform = TrapPlatform([randint(0, WIN_WIDTH), y], platform_image)
+                elif r <= BATOOT_PLATFORM_PERCENTAGE:
+                    platform = BatootPlatform([randint(0, WIN_WIDTH), y], platform_image)
                 else:
                     platform = Platform([randint(0, WIN_WIDTH), y], platform_image)
                 platforms.append(platform)

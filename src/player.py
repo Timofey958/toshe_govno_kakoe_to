@@ -35,5 +35,6 @@ class Player(Sprite):
                 self.jump_sound.play()
                 self.velocity_y = -JUMP_POWER
                 self.rect.bottom = platform.rect.top
+                platform.on_collide(self)
 
         
