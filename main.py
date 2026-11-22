@@ -5,6 +5,8 @@ from src.config import *
 from src.sprite import Sprite
 from src.player import Player
 from src.platforms import *
+from src.bullet import Bullet
+from src.monster import Monster
 
 def main():
     pygame.init()
@@ -21,6 +23,7 @@ def main():
 
     button_image = pygame.image.load("assets/button_image.jpg")
     button_image = pygame.transform.scale(button_image, [WIN_WIDTH / 5 * 4, WIN_WIDTH / 5])
+
     img = font.render("Заного", True, "white")
     rect = img.get_rect(center=[button_image.width / 2, button_image.height / 2])
     button_image.blit(img, rect)
@@ -34,6 +37,12 @@ def main():
 
     background_image = pygame.image.load("assets/background.png")
     background_image = pygame.transform.scale(background_image, WIN_SIZE)
+
+    bullet_image = pygame.image.load("assets/bullet.png")
+    bullet_image = pygame.transform.scale(bullet_image, (10, 10))
+    bullets = []
+
+    monster_image = pygame.image.load("assets/player.png")
 
     fall_sound = pygame.Sound("assets/fall.mp3")
     fall_sound.set_volume(0.1)
@@ -52,11 +61,15 @@ def main():
     lose = False
     offset_y = 0
     spawn_platform_y = 0
+    monster = None
     while running:
         pressed_keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.WINDOWCLOSE:
                 running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                b = Bullet(player.rect.midtop, bullet_image, 10)
+                bullets.append(b)
             elif event.type == DESTROY_PLATFORM:
                 platforms.remove(event.platform)
             elif (event.type == pygame.MOUSEBUTTONDOWN
@@ -74,11 +87,25 @@ def main():
 
         if not lose:
             player.update(platforms)
+            if monster != None:
+                monster.update()
+                if monster.rect.top - offset_y >= WIN_HEIGHT:
+                    monster = None
+                elif monster.rect.colliderect(player.rect):
+                    monster = None
+                    lose = True
             for platform in platforms:
                 platform.update()
             if player.rect.top - offset_y >= WIN_HEIGHT:
                 lose = True
                 fall_sound.play()
+            for bullet in bullets:
+                bullet.update()
+                if bullet.rect.bottom - offset_y <= 0:
+                    bullets.remove(bullet)
+                elif monster != None and monster.rect.colliderect(bullet.rect):
+                        monster = None
+                        bullets.remove(bullet)
                 
             if abs(offset_y) - spawn_platform_y >= SPAWN_STEP:
                 spawn_platform_y = abs(offset_y)
@@ -94,6 +121,11 @@ def main():
                     platform = Platform([randint(0, WIN_WIDTH), y], platform_image)
                 platforms.append(platform)
 
+                if randint(1, 100) <= 10 and monster == None:
+                    x = platform.rect.centerx
+                    y = y - monster_image.width
+                    monster = Monster([x, y], monster_image, randint(1, 3), 3.5)
+
 
 
             if player.rect.y - offset_y < WIN_HEIGHT / 3:
@@ -103,6 +135,11 @@ def main():
         for platform in platforms:
             platform.render(surface, -offset_y)
         player.render(surface, -offset_y)
+        for bullet in bullets:
+            bullet.render(surface, -offset_y)
+        if monster != None:
+            monster.render(surface, -offset_y)
+
 
         text = str(round(-offset_y/150))
         img = font.render(text, True, "black")
